@@ -1,11 +1,8 @@
-import sys
 import random
 from db import load_db, get_customer, add_customer, make_transfer, save_db
 
 
 customer_db = load_db()
-
-
 
 
 def create_account():
@@ -17,20 +14,27 @@ def create_account():
         account_number = str(random.randint(100000, 999999))
     add_customer(customer_db, account_number, username, password, DOB)
     print(f"Account created successfully. Account Number: {account_number}")
-   
-def deposit_to_account(account_number, amount):
+
+
+def deposit():
+    account_number = input("Enter your account number: ")
+    password = input("Enter your password: ")
+    amount = float(input("Enter the deposit amount: "))
     customer = get_customer(customer_db, account_number)
     if customer:
-        customer['balance'] += amount
-        print(f"Deposit successful. New balance: {customer['balance']}")
-        save_db(customer_db)
+        if customer["password"] != password:
+            print("Invalid password.")
+        else:
+            customer["balance"] += amount
+            print(f"Deposit successful. New balance: {customer['balance']}")
+            save_db(customer_db)
     else:
         print("Account not found.")
 
 
-def view_account_info(account_number, password):
-    account_number = input("Enter  your Account Number")
-    password = input("Enter Password")
+def view_account_info():
+    account_number = input("Enter your account number: ")
+    password = input("Enter your password: ")
     customer = get_customer(customer_db, account_number)
     if customer:
         if customer["password"] != password:
@@ -42,87 +46,84 @@ def view_account_info(account_number, password):
     else:
         print("Account not found.")
 
-def deposit_to_account(account_number, amount):
-    customer = get_customer(customer_db, account_number)
+
+def make_transfer():
+    sender_account = input("Enter your account number: ")
+    password = input("Enter your password: ")
+    receiver_account = input("Enter the recipient's account number: ")
+    amount = float(input("Enter the transfer amount: "))
+    customer = get_customer(customer_db, sender_account)
     if customer:
-        customer['balance'] += amount
-        print(f"Deposit successful. New balance: {customer['balance']}")
-        save_db(customer_db)
+        if customer["password"] != password:
+            print("Invalid password.")
+        elif customer["balance"] < amount:
+            print("Insufficient balance.")
+        else:
+            make_transfer_to_account(sender_account, receiver_account, amount)
     else:
         print("Account not found.")
-2
+
+
+
+def reset_password():
+    account_number = input("Enter your account number: ")
+    customer = get_customer(customer_db, account_number)
+    if customer:
+        option = input("Choose an option:\n1. Remember old password\n2. Complete remaining part of your name\n")
+        if option == "1":
+            password = input("Enter your old password: ")
+            if customer["password"] == password:
+                new_password = input("Enter your new password: ")
+                customer["password"] = new_password
+                print("Password reset successful.")
+                save_db(customer_db)
+            else:
+                print("Invalid password.")
+        elif option == "2":
+            remaining_name = input("Enter the remaining part of your name: ")
+            if customer["username"].endswith(remaining_name):
+                new_password = input("Enter your new password: ")
+                customer["password"] = new_password
+                print("Password reset successful.")
+                save_db(customer_db)
+            else:
+                print("Invalid name.")
+        else:
+            print("Invalid option.")
+    else:
+        print("Account not found.")
 
 
 def make_transfer_to_account(sender_account, receiver_account, amount):
     make_transfer(customer_db, sender_account, receiver_account, amount)
 
 
-def reset_customer_password_by_customer(account_number, password):
-    customer = get_customer(customer_db, account_number)
-    if customer:
-        if customer["password"] != password:
-            print("Invalid password.")
-        else:
-            option = input("Choose an option:\n1. Remember old password\n2. Complete remaining part of your name\n")
-            if option == "1":
-                new_password = input("Enter your old password: ")
-                customer["password"] = new_password
-                print("Password reset successful.")
-            elif option == "2":
-                remaining_name = input("Enter the remaining part of your name: ")
-                new_password = password + remaining_name
-                customer["password"] = new_password
-                print("Password reset successful.")
-            else:
-                print("Invalid option.")
-            save_db(customer_db)
-    else:
-        print("Account not found.")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        create_account()
-    elif len(sys.argv) == 3:
-        account_number = sys.argv[1]
-        password = sys.argv[2]
-        view_account_info(account_number, password)
-    elif len(sys.argv) == 5:
-        sender_account = sys.argv[1]
-        receiver_account = sys.argv[2]
-        amount = int(sys.argv[3])
-        password = sys.argv[4]
-        make_transfer_to_account(sender_account, receiver_account, amount)
-    elif len(sys.argv) == 6:
-        account_number = sys.argv[1]
-        password = sys.argv[2]
-        reset_customer_password_by_customer(account_number, password)
-    else:
-        print("Invalid arguments.")
-
 def show_menu():
-    while True: 
-      print("\nMenu:")
-      print("1. Create Account")
-      print("2. View account info")
-      print("3. Make Transfer")
-      print("4. Reset Password")
-      print("5. Exit")
+    while True:
+        print("\nMenu:")
+        print("1. Create Account")
+        print("2. Deposit")
+        print("3. View account info")
+        print("4. Make Transfer")
+        print("5. Reset Password")
+        print("6. Exit")
 
-      choice = input("Welcome!! What do you want to do today: ")
+        choice = input("Welcome!! What do you want to do today: ")
 
-      if choice == "1":
+        if choice == "1":
             create_account()
-      elif choice == "2":
-            view_account_info()      
-      elif choice == "3":
+        elif choice == "2":
+            deposit()
+        elif choice == "3":
+            view_account_info()
+        elif choice == "4":
             make_transfer()
-      elif choice == "4":
-            reset_customer_password_by_customer()
-      elif choice == "5":
+        elif choice == "5":
+            reset_password()
+        elif choice == "6":
             print("Exiting the program.")
             break
-      else:
+        else:
             print("Invalid choice. Please try again.")
 
 
