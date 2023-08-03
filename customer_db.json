@@ -1,0 +1,32 @@
+{
+  "123456": {
+    "username": "john_doe",
+    "password": "password123",
+    "balance": 1000,
+    "date_of_birth": "1990-01-01"
+  },
+  "264001": {
+    "username": "Favour Augustine",
+    "password": "1234",
+    "balance": 5000.0,
+    "date_of_birth": "1998-08-21"
+  },
+  "820834": {
+    "username": "John",
+    "password": "2345",
+    "balance": 0,
+    "date_of_birth": "1995-05-23"
+  },
+  "668875": {
+    "username": "James",
+    "password": "1245",
+    "balance": 1000.0,
+    "date_of_birth": "1990-09-34"
+  },
+  "626745": {
+    "username": "Mane",
+    "password": "9000",
+    "balance": 0,
+    "date_of_birth": "1990-04-21"
+  }
+}

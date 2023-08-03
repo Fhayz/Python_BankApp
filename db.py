@@ -1,15 +1,16 @@
-import pickle
+import json
 
-db_file = "customer_db.pickle"
+db_file = "customer_db.json"
+log_file = "transaction_log.txt"
 
 def save_db(customer_db):
-    with open(db_file, "wb") as file:
-        pickle.dump(customer_db, file)
+    with open(db_file, "w") as file:
+        json.dump(customer_db, file, indent=2)
 
 def load_db():
     try:
         with open(db_file, "rb") as file:
-            return pickle.load(file)
+            return json.load(file)
     except FileNotFoundError:
         return {}
     
@@ -44,6 +45,8 @@ def deposit_to_account(customer_db, account_number, amount):
         print("Deposit successful.")
     else:
         print("Customer not found.")
+    save_db(customer_db)
+
 
 def validate_transfer(customer_db, sender_account, receiver_account, amount):
     sender = get_customer(customer_db, sender_account)
@@ -69,3 +72,16 @@ def make_transfer(customer_db, sender_account, receiver_account, amount):
         receiver["balance"] += amount
         save_db(customer_db)
         print("Transfer successful.")
+        log_transaction(f"Transferred {amount} from account {sender_account} to account {receiver_account}.")
+    save_db(customer_db)
+
+    
+def log_transaction(transaction_details):
+    try:
+        with open(log_file, "a") as file:
+            json.dump(transaction_details, file, indent=2)
+            file.write("\n")
+    except Exception as e:
+        print(f"Error while logging transaction: {e}")
+if __name__ == "__main__":
+    pass

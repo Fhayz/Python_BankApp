@@ -1,5 +1,5 @@
 import random
-from db import load_db, get_customer, add_customer, make_transfer, save_db
+from db import load_db, get_customer, add_customer, make_transfer, save_db , log_transaction
 
 
 customer_db = load_db()
@@ -30,6 +30,7 @@ def deposit():
             save_db(customer_db)
     else:
         print("Account not found.")
+    log_transaction(f"Deposited {amount} to account {account_number}.")
 
 
 def view_account_info():
@@ -45,7 +46,7 @@ def view_account_info():
             print(f"Balance: {customer['balance']}")
     else:
         print("Account not found.")
-
+   
 
 def make_transfer():
     sender_account = input("Enter your account number: ")
@@ -59,10 +60,10 @@ def make_transfer():
         elif customer["balance"] < amount:
             print("Insufficient balance.")
         else:
-            make_transfer_to_account(sender_account, receiver_account, amount)
+            make_transfer_to_account(customer_db,sender_account, receiver_account, amount)
     else:
         print("Account not found.")
-
+    log_transaction(f"Transferred {amount} from account {sender_account} to account {receiver_account}.")
 
 
 def reset_password():
@@ -94,7 +95,7 @@ def reset_password():
         print("Account not found.")
 
 
-def make_transfer_to_account(sender_account, receiver_account, amount):
+def make_transfer_to_account(customer_db, sender_account, receiver_account, amount):
     make_transfer(customer_db, sender_account, receiver_account, amount)
 
 
@@ -129,3 +130,5 @@ def show_menu():
 
 if __name__ == "__main__":
     show_menu()
+# 576842
+# 563219
